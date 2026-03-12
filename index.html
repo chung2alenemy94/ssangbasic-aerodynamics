@@ -41,61 +41,49 @@
         .content-area { display: none; flex: 1; position: relative; overflow: hidden; }
         .content-area.active { display: flex; flex-direction: column; }
 
-        /* 이론 설명 페이지 */
-        #theoryContent { padding: 20px; overflow-y: auto; background: white; -webkit-overflow-scrolling: touch; }
-        .section-title { border-left: 5px solid var(--primary-blue); padding-left: 12px; margin: 25px 0 15px; font-size: 1.1em; }
-        .force-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
-        .force-card { background: #f8f9fa; border-radius: 8px; padding: 12px; border-top: 3px solid var(--primary-blue); font-size: 0.85em; }
-        .danger-card { border: 1px solid #eee; padding: 15px; border-radius: 12px; margin-bottom: 15px; border-top: 4px solid var(--warning-red); }
+        /* 이론 설명 페이지 보강 */
+        #theoryContent { padding: 25px; overflow-y: auto; background: white; -webkit-overflow-scrolling: touch; }
+        .main-title { color: #2d3436; border-bottom: 2px solid var(--primary-blue); padding-bottom: 10px; margin-bottom: 20px; }
+        .section-title { border-left: 5px solid var(--primary-blue); padding-left: 12px; margin: 30px 0 15px; font-size: 1.15em; color: #0984e3; font-weight: bold; }
+        
+        .theory-p { line-height: 1.6; color: #636e72; margin-bottom: 20px; font-size: 0.95em; }
+        
+        /* 4대 요소 카드 */
+        .force-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 25px; }
+        .force-card { background: #f8f9fa; border-radius: 10px; padding: 15px; border-top: 4px solid var(--primary-blue); }
+        .force-card h4 { margin: 0 0 5px 0; color: #2d3436; font-size: 1em; }
+        .force-card p { margin: 0; font-size: 0.85em; color: #636e72; line-height: 1.4; }
 
-        /* 시뮬레이션 페이지 구조 개편 */
+        /* 위험 상태 카드 */
+        .danger-card { border: 1px solid #eee; padding: 18px; border-radius: 12px; margin-bottom: 15px; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .danger-card strong { display: block; margin-bottom: 5px; font-size: 1.1em; }
+        .stall-border { border-left: 6px solid var(--warning-red); }
+        .speed-border { border-left: 6px solid var(--warning-orange); }
+
+        /* 시뮬레이션 페이지 */
         #simContent { display: none; flex-direction: column; height: 100%; background: #e0e4e8; }
         #simContent.active { display: flex; }
 
-        /* 시각화 영역 (상단) */
-        .canvas-container { 
-            flex: 1; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            position: relative; 
-            padding: 10px;
-        }
-        #simCanvas { 
-            background-color: var(--canvas-bg); 
-            border-radius: 12px; 
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            max-width: 100%;
-            max-height: 100%;
-        }
+        .canvas-container { flex: 1; display: flex; justify-content: center; align-items: center; position: relative; padding: 10px; }
+        #simCanvas { background-color: var(--canvas-bg); border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); max-width: 100%; max-height: 100%; }
 
-        /* 하단 조종 패널 영역 */
-        .control-panel { 
-            background: white; 
-            padding: 20px; 
-            border-top: 2px solid #ccc; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 15px;
-            flex-shrink: 0;
-        }
+        /* 하단 조종 패널 */
+        .control-panel { background: white; padding: 20px; border-top: 2px solid #ccc; display: flex; flex-direction: column; gap: 12px; flex-shrink: 0; }
+        .control-row { display: flex; align-items: center; gap: 12px; }
+        .control-row label { min-width: 70px; font-weight: bold; font-size: 0.85em; color: #2d3436; }
+        .control-row input { flex: 1; height: 35px; }
+        .value-display { min-width: 45px; text-align: right; font-weight: bold; color: var(--primary-blue); font-size: 0.9em; }
 
-        .control-row { display: flex; align-items: center; gap: 15px; }
-        .control-row label { min-width: 80px; font-weight: bold; font-size: 0.9em; }
-        .control-row input { flex: 1; height: 30px; }
-        .value-display { min-width: 40px; text-align: right; font-variant-numeric: tabular-nums; font-weight: bold; color: var(--primary-blue); }
-
-        /* 상태 알림 */
-        .status-overlay { 
-            position: absolute; top: 20px; right: 20px; text-align: right; pointer-events: none; 
-        }
+        /* 알림 텍스트 */
+        .status-overlay { position: absolute; top: 20px; right: 20px; text-align: right; pointer-events: none; }
         .warning-text { font-weight: bold; font-size: 1.1em; margin: 0; display: none; }
-        #stallTxt { color: var(--warning-red); }
-        #overspeedTxt { color: var(--warning-orange); }
+        #stallTxt { color: var(--warning-red); text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        #overspeedTxt { color: var(--warning-orange); text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
 
         @media (min-width: 768px) {
-            .control-panel { flex-direction: row; justify-content: center; padding: 30px; }
-            .control-row { width: 400px; }
+            .control-panel { flex-direction: row; justify-content: center; padding: 25px; gap: 40px; }
+            .control-row { width: 350px; }
+            #theoryContent { padding: 40px; }
         }
     </style>
 </head>
@@ -107,29 +95,40 @@
     </div>
 
     <div id="theoryContent" class="content-area active">
-        <h2>항공 역학 핵심 정리</h2>
-        <div class="section-title">비행의 4대 요소</div>
+        <h2 class="main-title">항공 역학의 원리</h2>
+        
+        <p class="theory-p">비행기가 하늘을 나는 것은 단순한 우연이 아닌, 공기 역학적 힘의 정교한 균형 덕분입니다. 아래의 핵심 요소들을 통해 그 원리를 이해해 보세요.</p>
+
+        <div class="section-title">1. 비행의 4대 요소</div>
         <div class="force-grid">
-            <div class="force-card"><h4>양력</h4><p>떠오르는 힘</p></div>
-            <div class="force-card"><h4>중력</h4><p>당기는 힘</p></div>
-            <div class="force-card"><h4>추력</h4><p>나가는 힘</p></div>
-            <div class="force-card"><h4>항력</h4><p>버티는 힘</p></div>
+            <div class="force-card"><h4>양력 (Lift)</h4><p>날개 상하부의 압력 차이로 발생하며, 비행기를 위로 띄웁니다.</p></div>
+            <div class="force-card" style="border-top-color: var(--accent-green);"><h4>중력 (Weight)</h4><p>비행기의 무게로 인해 지구 중심 방향으로 당겨지는 힘입니다.</p></div>
+            <div class="force-card" style="border-top-color: var(--warning-orange);"><h4>추력 (Thrust)</h4><p>엔진이 비행기를 앞으로 밀어내는 추진력입니다.</p></div>
+            <div class="force-card" style="border-top-color: #636e72;"><h4>항력 (Drag)</h4><p>공기의 저항으로 인해 전진을 방해하는 힘입니다.</p></div>
         </div>
-        <div class="section-title">위험 상태</div>
-        <div class="danger-card">
-            <strong>실속 (Stall):</strong> 기수 각도가 너무 높으면 기류가 박리되어 추락합니다.
+
+        <div class="section-title">2. 받음각(AoA)과 양력 발생</div>
+        <p class="theory-p">받음각이란 날개의 기준선과 상대풍(맞바람) 사이의 각도를 말합니다. 적절한 각도로 기수를 들면 양력이 증가하지만, 너무 높이면 공기의 흐름이 날개 표면에서 떨어져 나가는 <strong>흐름 박리</strong>가 일어납니다.</p>
+
+        <div class="section-title">3. 비행 한계와 위험</div>
+        
+        <div class="danger-card stall-border">
+            <strong style="color:var(--warning-red)">실속 (Stall) - 받음각 임계치 초과</strong>
+            <p class="theory-p" style="margin-bottom:0">기수가 약 18도 이상 들리면 공기가 날개를 따라 흐르지 못하고 소용돌이칩니다. 이때 양력이 급격히 감소하며 비행기가 통제 불능 상태로 추락할 수 있습니다.</p>
         </div>
-        <div class="danger-card" style="border-top-color: var(--warning-orange);">
-            <strong>과속 (Overspeed):</strong> 한계 속도를 넘으면 기체가 파손될 수 있습니다.
+
+        <div class="danger-card speed-border">
+            <strong style="color:var(--warning-orange)">과속 (Overspeed) - 구조적 한계</strong>
+            <p class="theory-p" style="margin-bottom:0">비행기가 설계된 최대 속도를 넘어서면 기체 표면에 엄청난 압력이 가해집니다. 이는 날개의 변형이나 파손을 유발하며 공중 분해의 위험이 있습니다.</p>
         </div>
     </div>
 
     <div id="simContent" class="content-area">
         <div class="canvas-container">
             <div class="status-overlay">
-                <p id="statusNormal" style="color: var(--primary-blue); font-weight: bold;">Normal Flight</p>
-                <p id="stallTxt" class="warning-text">⚠️ STALL</p>
-                <p id="overspeedTxt" class="warning-text">⚠️ OVERSPEED</p>
+                <p id="statusNormal" style="color: var(--primary-blue); font-weight: bold;">정상 비행 중</p>
+                <p id="stallTxt" class="warning-text">⚠️ 실속 발생 (STALL)</p>
+                <p id="overspeedTxt" class="warning-text">⚠️ 과속 경고 (OVERSPEED)</p>
             </div>
             <canvas id="simCanvas"></canvas>
         </div>
@@ -141,7 +140,7 @@
                 <div class="value-display"><span id="pitchVal">0</span>°</div>
             </div>
             <div class="control-row">
-                <label>비행 속도</label>
+                <label>풍속 설정</label>
                 <input type="range" id="speedRange" min="1" max="15" value="5">
                 <div class="value-display"><span id="speedVal">5</span></div>
             </div>
@@ -156,7 +155,9 @@
             for (let i = 0; i < tabs.length; i++) tabs[i].classList.remove("active");
             document.getElementById(tabId).classList.add("active");
             evt.currentTarget.classList.add("active");
-            if(tabId === 'simContent') resizeCanvas();
+            if(tabId === 'simContent') {
+                setTimeout(resizeCanvas, 10);
+            }
         }
 
         const canvas = document.getElementById('simCanvas');
@@ -171,14 +172,15 @@
 
         function resizeCanvas() {
             const container = document.querySelector('.canvas-container');
+            if (!container) return;
             canvas.width = container.clientWidth - 20;
-            canvas.height = Math.min(container.clientHeight - 20, 400);
+            canvas.height = Math.min(container.clientHeight - 20, 450);
             createParticles();
         }
 
         function createParticles() {
             particles = [];
-            const count = (canvas.width * canvas.height) / 800;
+            const count = Math.floor((canvas.width * canvas.height) / 850);
             for (let i = 0; i < count; i++) {
                 particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, v: 1 + Math.random() * 2 });
             }
@@ -227,10 +229,10 @@
                 let dy = p.y - cy;
                 let dist = Math.sqrt(dx*dx + dy*dy);
 
-                if (dist < canvas.width * 0.2) {
-                    if (isStall && dx > 0) p.y += (Math.random() - 0.5) * 15;
+                if (dist < canvas.width * 0.22) {
+                    if (isStall && dx > 0) p.y += (Math.random() - 0.5) * 18;
                     else {
-                        let influence = (canvas.width * 0.2 - dist) / (canvas.width * 0.2);
+                        let influence = (canvas.width * 0.22 - dist) / (canvas.width * 0.22);
                         p.y += Math.sin(pitchRad) * flowSpeed * influence;
                     }
                 }
@@ -241,7 +243,7 @@
             ctx.translate(cx, cy);
             ctx.rotate(pitchRad); 
             ctx.fillStyle = "#2d3436";
-            const planeW = Math.min(canvas.width * 0.3, 150);
+            const planeW = Math.min(canvas.width * 0.25, 140);
             const planeH = planeW * 0.12;
             ctx.fillRect(-planeW/2, -planeH/2, planeW, planeH); 
             ctx.fillStyle = "#000";
