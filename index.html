@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Flight Dynamics Learning Module</title>
+    <title>Flight Dynamics Module</title>
     <style>
         :root { 
             --bg-color: #f0f2f5; 
@@ -13,7 +13,6 @@
             --warning-orange: #e67e22;
             --canvas-bg: #ffffff;
             --tab-bg: #dfe6e9;
-            --accent-green: #27ae60;
         }
         
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -25,80 +24,78 @@
             margin: 0; 
             display: flex; 
             flex-direction: column; 
-            height: 100vh; 
-            height: -webkit-fill-available;
+            height: 100vh;
             overflow: hidden; 
         }
 
         /* 탭 스타일 */
         .tab-container { display: flex; background: var(--tab-bg); padding: 10px 10px 0; border-bottom: 2px solid #ccc; flex-shrink: 0; }
         .tab { 
-            flex: 1;
-            text-align: center;
-            padding: 12px 10px; 
-            cursor: pointer; 
-            border-radius: 8px 8px 0 0; 
-            background: #b2bec3; 
-            margin-right: 5px; 
-            font-weight: bold; 
-            font-size: 0.9em;
-            transition: 0.3s; 
+            flex: 1; text-align: center; padding: 12px 10px; cursor: pointer; 
+            border-radius: 8px 8px 0 0; background: #b2bec3; margin-right: 5px; 
+            font-weight: bold; font-size: 0.9em; transition: 0.3s; 
         }
-        .tab.active { background: var(--canvas-bg); color: var(--primary-blue); border: 2px solid #ccc; border-bottom: none; position: relative; bottom: -2px; }
+        .tab.active { background: #fff; color: var(--primary-blue); border: 2px solid #ccc; border-bottom: none; position: relative; bottom: -2px; }
         
         /* 콘텐츠 영역 */
         .content-area { display: none; flex: 1; position: relative; overflow: hidden; }
         .content-area.active { display: flex; flex-direction: column; }
 
-        /* 이론 설명 페이지 스타일 */
+        /* 이론 설명 페이지 */
         #theoryContent { padding: 20px; overflow-y: auto; background: white; -webkit-overflow-scrolling: touch; }
-        .section-title { border-left: 5px solid var(--primary-blue); padding-left: 12px; margin: 25px 0 15px; color: #2c3e50; font-size: 1.2em; }
-        
-        .force-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin-bottom: 30px; }
-        .force-card { background: #f8f9fa; border-radius: 10px; padding: 15px; border-top: 4px solid var(--primary-blue); font-size: 0.9em; }
-        .force-card h4 { margin: 0 0 8px 0; color: var(--primary-blue); }
+        .section-title { border-left: 5px solid var(--primary-blue); padding-left: 12px; margin: 25px 0 15px; font-size: 1.1em; }
+        .force-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
+        .force-card { background: #f8f9fa; border-radius: 8px; padding: 12px; border-top: 3px solid var(--primary-blue); font-size: 0.85em; }
+        .danger-card { border: 1px solid #eee; padding: 15px; border-radius: 12px; margin-bottom: 15px; border-top: 4px solid var(--warning-red); }
 
-        .danger-grid { display: grid; grid-template-columns: 1fr; gap: 20px; margin-top: 15px; }
-        @media (min-width: 769px) { .danger-grid { grid-template-columns: 1fr 1fr; } }
+        /* 시뮬레이션 페이지 구조 개편 */
+        #simContent { display: none; flex-direction: column; height: 100%; background: #e0e4e8; }
+        #simContent.active { display: flex; }
 
-        .danger-card { border: 1px solid #eee; padding: 20px; border-radius: 15px; background: #fff; position: relative; }
-        .danger-card.stall { border-top: 5px solid var(--warning-red); }
-        .danger-card.overspeed { border-top: 5px solid var(--warning-orange); }
-        .danger-tag { position: absolute; top: -10px; right: 15px; background: #333; color: white; padding: 2px 10px; border-radius: 20px; font-size: 0.7em; }
-
-        /* 시뮬레이션 페이지 스타일 */
-        #simContent { align-items: center; justify-content: center; background: #e0e4e8; padding: 10px; }
-        .settings-container { position: absolute; top: 15px; left: 15px; z-index: 100; }
-        #settingsBtn { padding: 10px 18px; cursor: pointer; border-radius: 50px; border: none; background: var(--primary-blue); color: white; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        
-        #settingsPanel { 
-            position: absolute; top: 55px; left: 0; background: white; padding: 20px; 
-            border-radius: 15px; border: 1px solid #ddd; min-width: 260px; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        /* 시각화 영역 (상단) */
+        .canvas-container { 
+            flex: 1; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            position: relative; 
+            padding: 10px;
         }
-        .hidden { display: none; }
-        .settingItem { margin-top: 15px; font-size: 0.9em; font-weight: bold; }
-        input[type="range"] { width: 100%; height: 25px; margin-top: 8px; }
-        
         #simCanvas { 
             background-color: var(--canvas-bg); 
-            border-radius: 15px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-radius: 12px; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             max-width: 100%;
-            height: auto;
-            touch-action: none;
+            max-height: 100%;
         }
 
-        .status-box { position: absolute; top: 15px; right: 15px; text-align: right; z-index: 90; pointer-events: none; }
-        .warning { font-weight: bold; font-size: 1.2em; display: none; margin: 0; }
+        /* 하단 조종 패널 영역 */
+        .control-panel { 
+            background: white; 
+            padding: 20px; 
+            border-top: 2px solid #ccc; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px;
+            flex-shrink: 0;
+        }
+
+        .control-row { display: flex; align-items: center; gap: 15px; }
+        .control-row label { min-width: 80px; font-weight: bold; font-size: 0.9em; }
+        .control-row input { flex: 1; height: 30px; }
+        .value-display { min-width: 40px; text-align: right; font-variant-numeric: tabular-nums; font-weight: bold; color: var(--primary-blue); }
+
+        /* 상태 알림 */
+        .status-overlay { 
+            position: absolute; top: 20px; right: 20px; text-align: right; pointer-events: none; 
+        }
+        .warning-text { font-weight: bold; font-size: 1.1em; margin: 0; display: none; }
         #stallTxt { color: var(--warning-red); }
         #overspeedTxt { color: var(--warning-orange); }
-        .normal-flight { color: var(--primary-blue); font-weight: bold; font-size: 1em; }
 
-        @media (max-width: 480px) {
-            .status-box { top: auto; bottom: 20px; right: 20px; }
-            .section-title { font-size: 1.1em; }
-            h2 { font-size: 1.3em; }
+        @media (min-width: 768px) {
+            .control-panel { flex-direction: row; justify-content: center; padding: 30px; }
+            .control-row { width: 400px; }
         }
     </style>
 </head>
@@ -106,59 +103,49 @@
 
     <div class="tab-container">
         <div class="tab active" onclick="openTab(event, 'theoryContent')">이론 학습</div>
-        <div class="tab" onclick="openTab(event, 'simContent')">시뮬레이션</div>
+        <div class="tab" onclick="openTab(event, 'simContent')">비행 시뮬레이션</div>
     </div>
 
     <div id="theoryContent" class="content-area active">
-        <h2>항공 역학 입문</h2>
-        <p style="color: #636e72; font-size: 0.9em;">비행기의 4가지 힘과 한계 상태 학습</p>
-
-        <h3 class="section-title">비행의 4대 요소</h3>
+        <h2>항공 역학 핵심 정리</h2>
+        <div class="section-title">비행의 4대 요소</div>
         <div class="force-grid">
-            <div class="force-card"><h4>양력</h4><p>위로 뜨는 힘</p></div>
-            <div class="force-card" style="border-top-color: var(--accent-green);"><h4>중력</h4><p>아래로 당기는 힘</p></div>
-            <div class="force-card" style="border-top-color: var(--warning-orange);"><h4>추력</h4><p>앞으로 나가는 힘</p></div>
-            <div class="force-card" style="border-top-color: #636e72;"><h4>항력</h4><p>방해하는 저항</p></div>
+            <div class="force-card"><h4>양력</h4><p>떠오르는 힘</p></div>
+            <div class="force-card"><h4>중력</h4><p>당기는 힘</p></div>
+            <div class="force-card"><h4>추력</h4><p>나가는 힘</p></div>
+            <div class="force-card"><h4>항력</h4><p>버티는 힘</p></div>
         </div>
-
-        <h3 class="section-title">비행 위험 상태</h3>
-        <div class="danger-grid">
-            <div class="danger-card stall">
-                <div class="danger-tag" style="background:var(--warning-red)">위험: 상</div>
-                <h3>실속 (Stall)</h3>
-                <p>기수를 너무 높이면 공기 흐름이 끊겨 양력을 잃고 추락합니다.</p>
-            </div>
-            <div class="danger-card overspeed">
-                <div class="danger-tag" style="background:var(--warning-orange)">위험: 중</div>
-                <h3>과속 (Overspeed)</h3>
-                <p>제한 속도를 넘으면 기체가 진동하며 파손될 위험이 큽니다.</p>
-            </div>
+        <div class="section-title">위험 상태</div>
+        <div class="danger-card">
+            <strong>실속 (Stall):</strong> 기수 각도가 너무 높으면 기류가 박리되어 추락합니다.
+        </div>
+        <div class="danger-card" style="border-top-color: var(--warning-orange);">
+            <strong>과속 (Overspeed):</strong> 한계 속도를 넘으면 기체가 파손될 수 있습니다.
         </div>
     </div>
 
     <div id="simContent" class="content-area">
-        <div class="settings-container">
-            <button id="settingsBtn">조종 패널</button>
-            <div id="settingsPanel" class="hidden">
-                <div class="settingItem">
-                    기수 각도: <span id="pitchVal">0</span>°
-                    <input type="range" id="pitchRange" min="-45" max="45" value="0">
-                </div>
-                <div class="settingItem">
-                    비행 속도: <span id="speedVal">5</span>
-                    <input type="range" id="speedRange" min="1" max="15" value="5">
-                </div>
-                <button onclick="document.getElementById('settingsPanel').classList.add('hidden')" style="margin-top:15px; width:100%; padding:8px; border:none; border-radius:5px; background:#eee;">닫기</button>
+        <div class="canvas-container">
+            <div class="status-overlay">
+                <p id="statusNormal" style="color: var(--primary-blue); font-weight: bold;">Normal Flight</p>
+                <p id="stallTxt" class="warning-text">⚠️ STALL</p>
+                <p id="overspeedTxt" class="warning-text">⚠️ OVERSPEED</p>
+            </div>
+            <canvas id="simCanvas"></canvas>
+        </div>
+
+        <div class="control-panel">
+            <div class="control-row">
+                <label>기수 각도</label>
+                <input type="range" id="pitchRange" min="-45" max="45" value="0">
+                <div class="value-display"><span id="pitchVal">0</span>°</div>
+            </div>
+            <div class="control-row">
+                <label>비행 속도</label>
+                <input type="range" id="speedRange" min="1" max="15" value="5">
+                <div class="value-display"><span id="speedVal">5</span></div>
             </div>
         </div>
-
-        <div class="status-box">
-            <div id="statusNormal" class="normal-flight">Steady Flight</div>
-            <p id="stallTxt" class="warning">⚠️ STALL</p>
-            <p id="overspeedTxt" class="warning">⚠️ OVERSPEED</p>
-        </div>
-
-        <canvas id="simCanvas"></canvas>
     </div>
 
     <script>
@@ -178,21 +165,14 @@
         const speedRange = document.getElementById('speedRange');
         const pitchValTxt = document.getElementById('pitchVal');
         const speedValTxt = document.getElementById('speedVal');
-        const settingsBtn = document.getElementById('settingsBtn');
-        const settingsPanel = document.getElementById('settingsPanel');
-
-        const statusNormal = document.getElementById('statusNormal');
-        const stallTxt = document.getElementById('stallTxt');
-        const overspeedTxt = document.getElementById('overspeedTxt');
 
         let particles = [];
         let currentPitch = 0;
 
         function resizeCanvas() {
-            const displayWidth = Math.min(window.innerWidth - 40, 800);
-            const displayHeight = Math.min(window.innerHeight * 0.6, 500);
-            canvas.width = displayWidth;
-            canvas.height = displayHeight;
+            const container = document.querySelector('.canvas-container');
+            canvas.width = container.clientWidth - 20;
+            canvas.height = Math.min(container.clientHeight - 20, 400);
             createParticles();
         }
 
@@ -203,11 +183,6 @@
                 particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, v: 1 + Math.random() * 2 });
             }
         }
-
-        settingsBtn.onclick = (e) => {
-            e.stopPropagation();
-            settingsPanel.classList.toggle('hidden');
-        };
 
         function draw() {
             if (!document.getElementById('simContent').classList.contains('active')) {
@@ -229,9 +204,9 @@
             const isStall = currentPitch > 18;       
             const isOverspeed = currentPitch < -20;  
 
-            statusNormal.style.display = (!isStall && !isOverspeed) ? 'block' : 'none';
-            stallTxt.style.display = isStall ? 'block' : 'none';
-            overspeedTxt.style.display = isOverspeed ? 'block' : 'none';
+            document.getElementById('statusNormal').style.display = (!isStall && !isOverspeed) ? 'block' : 'none';
+            document.getElementById('stallTxt').style.display = isStall ? 'block' : 'none';
+            document.getElementById('overspeedTxt').style.display = isOverspeed ? 'block' : 'none';
 
             let flowSpeed = isOverspeed ? baseSpeed * 2.5 : baseSpeed;
             let flowAngle = 0; 
@@ -266,7 +241,7 @@
             ctx.translate(cx, cy);
             ctx.rotate(pitchRad); 
             ctx.fillStyle = "#2d3436";
-            const planeW = canvas.width * 0.2;
+            const planeW = Math.min(canvas.width * 0.3, 150);
             const planeH = planeW * 0.12;
             ctx.fillRect(-planeW/2, -planeH/2, planeW, planeH); 
             ctx.fillStyle = "#000";
