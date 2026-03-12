@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Flight Dynamics Module</title>
+    <title>Flight Dynamics Learning Module</title>
     <style>
         :root { 
             --bg-color: #f0f2f5; 
@@ -41,22 +41,21 @@
         .content-area { display: none; flex: 1; position: relative; overflow: hidden; }
         .content-area.active { display: flex; flex-direction: column; }
 
-        /* 이론 설명 페이지 보강 */
+        /* 이론 설명 페이지 (강화 버전) */
         #theoryContent { padding: 25px; overflow-y: auto; background: white; -webkit-overflow-scrolling: touch; }
         .main-title { color: #2d3436; border-bottom: 2px solid var(--primary-blue); padding-bottom: 10px; margin-bottom: 20px; }
         .section-title { border-left: 5px solid var(--primary-blue); padding-left: 12px; margin: 30px 0 15px; font-size: 1.15em; color: #0984e3; font-weight: bold; }
-        
-        .theory-p { line-height: 1.6; color: #636e72; margin-bottom: 20px; font-size: 0.95em; }
+        .theory-p { line-height: 1.7; color: #444; margin-bottom: 18px; font-size: 0.95em; text-align: justify; }
         
         /* 4대 요소 카드 */
         .force-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 25px; }
-        .force-card { background: #f8f9fa; border-radius: 10px; padding: 15px; border-top: 4px solid var(--primary-blue); }
-        .force-card h4 { margin: 0 0 5px 0; color: #2d3436; font-size: 1em; }
+        .force-card { background: #f8f9fa; border-radius: 10px; padding: 15px; border-top: 4px solid var(--primary-blue); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .force-card h4 { margin: 0 0 8px 0; color: #2d3436; font-size: 1em; }
         .force-card p { margin: 0; font-size: 0.85em; color: #636e72; line-height: 1.4; }
 
         /* 위험 상태 카드 */
-        .danger-card { border: 1px solid #eee; padding: 18px; border-radius: 12px; margin-bottom: 15px; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .danger-card strong { display: block; margin-bottom: 5px; font-size: 1.1em; }
+        .danger-card { border: 1px solid #eee; padding: 20px; border-radius: 12px; margin-bottom: 15px; background: #fff; box-shadow: 0 3px 6px rgba(0,0,0,0.08); }
+        .danger-card strong { display: block; margin-bottom: 8px; font-size: 1.1em; }
         .stall-border { border-left: 6px solid var(--warning-red); }
         .speed-border { border-left: 6px solid var(--warning-orange); }
 
@@ -67,16 +66,25 @@
         .canvas-container { flex: 1; display: flex; justify-content: center; align-items: center; position: relative; padding: 10px; }
         #simCanvas { background-color: var(--canvas-bg); border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); max-width: 100%; max-height: 100%; }
 
-        /* 하단 조종 패널 */
+        /* 하단 고정 조종 패널 */
         .control-panel { background: white; padding: 20px; border-top: 2px solid #ccc; display: flex; flex-direction: column; gap: 12px; flex-shrink: 0; }
         .control-row { display: flex; align-items: center; gap: 12px; }
-        .control-row label { min-width: 70px; font-weight: bold; font-size: 0.85em; color: #2d3436; }
+        .control-row label { min-width: 75px; font-weight: bold; font-size: 0.85em; color: #2d3436; }
         .control-row input { flex: 1; height: 35px; }
         .value-display { min-width: 45px; text-align: right; font-weight: bold; color: var(--primary-blue); font-size: 0.9em; }
 
-        /* 알림 텍스트 */
+        /* 알림 및 깜빡임 효과 */
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
         .status-overlay { position: absolute; top: 20px; right: 20px; text-align: right; pointer-events: none; }
-        .warning-text { font-weight: bold; font-size: 1.1em; margin: 0; display: none; }
+        .warning-text { 
+            font-weight: bold; font-size: 1.2em; margin: 0; display: none; 
+            animation: blink 0.6s step-end infinite; 
+        }
         #stallTxt { color: var(--warning-red); text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
         #overspeedTxt { color: var(--warning-orange); text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
 
@@ -90,45 +98,57 @@
 <body>
 
     <div class="tab-container">
-        <div class="tab active" onclick="openTab(event, 'theoryContent')">이론 학습</div>
-        <div class="tab" onclick="openTab(event, 'simContent')">비행 시뮬레이션</div>
+        <div class="tab active" onclick="openTab(event, 'theoryContent')">개념 설명</div>
+        <div class="tab" onclick="openTab(event, 'simContent')">과속/실속 시각자료</div>
     </div>
 
     <div id="theoryContent" class="content-area active">
-        <h2 class="main-title">항공 역학의 원리</h2>
+        <h2 class="main-title">항공 역학의 원리 (Aerodynamics)</h2>
         
-        <p class="theory-p">비행기가 하늘을 나는 것은 단순한 우연이 아닌, 공기 역학적 힘의 정교한 균형 덕분입니다. 아래의 핵심 요소들을 통해 그 원리를 이해해 보세요.</p>
+        <p class="theory-p">비행기가 무거운 무게에도 불구하고 하늘을 날 수 있는 것은 날개 주변을 흐르는 공기의 물리적 성질 덕분입니다. 비행 원리를 이해하기 위해 아래의 핵심 개념들을 확인해 보세요.</p>
 
-        <div class="section-title">1. 비행의 4대 요소</div>
+        <div class="section-title">1. 비행의 4대 요소 (The Four Forces)</div>
         <div class="force-grid">
-            <div class="force-card"><h4>양력 (Lift)</h4><p>날개 상하부의 압력 차이로 발생하며, 비행기를 위로 띄웁니다.</p></div>
-            <div class="force-card" style="border-top-color: var(--accent-green);"><h4>중력 (Weight)</h4><p>비행기의 무게로 인해 지구 중심 방향으로 당겨지는 힘입니다.</p></div>
-            <div class="force-card" style="border-top-color: var(--warning-orange);"><h4>추력 (Thrust)</h4><p>엔진이 비행기를 앞으로 밀어내는 추진력입니다.</p></div>
-            <div class="force-card" style="border-top-color: #636e72;"><h4>항력 (Drag)</h4><p>공기의 저항으로 인해 전진을 방해하는 힘입니다.</p></div>
+            <div class="force-card">
+                <h4>양력 (Lift)</h4>
+                <p>날개 상하부의 압력 차이와 공기의 편향으로 발생하며, 비행기를 위로 들어 올립니다.</p>
+            </div>
+            <div class="force-card" style="border-top-color: var(--accent-green);">
+                <h4>중력 (Weight)</h4>
+                <p>기체와 화물의 무게로 인해 지구 중심 방향으로 당겨지는 자연적인 힘입니다.</p>
+            </div>
+            <div class="force-card" style="border-top-color: var(--warning-orange);">
+                <h4>추력 (Thrust)</h4>
+                <p>제트 엔진이나 프로펠러가 공기를 뒤로 밀어내며 기체를 앞으로 전진시키는 추진력입니다.</p>
+            </div>
+            <div class="force-card" style="border-top-color: #636e72;">
+                <h4>항력 (Drag)</h4>
+                <p>공기의 점성과 마찰로 인해 비행기의 전진을 방해하는 저항력입니다.</p>
+            </div>
         </div>
 
-        <div class="section-title">2. 받음각(AoA)과 양력 발생</div>
-        <p class="theory-p">받음각이란 날개의 기준선과 상대풍(맞바람) 사이의 각도를 말합니다. 적절한 각도로 기수를 들면 양력이 증가하지만, 너무 높이면 공기의 흐름이 날개 표면에서 떨어져 나가는 <strong>흐름 박리</strong>가 일어납니다.</p>
+        <div class="section-title">2. 양력은 어떻게 발생하는가?</div>
+        <p class="theory-p">가장 널리 알려진 설명은 <strong>베르누이의 정리</strong>입니다. 날개 윗면의 곡선 때문에 공기가 더 빠르게 흐르면 압력이 낮아지고, 상대적으로 압력이 높은 아랫면이 날개를 위로 밀어 올리게 됩니다. 또한, 날개가 공기를 아래로 꺾어 보내는 과정에서 발생하는 <strong>뉴턴의 제3법칙(작용-반작용)</strong>도 양력 발생의 핵심 원인입니다.</p>
 
-        <div class="section-title">3. 비행 한계와 위험</div>
+        <div class="section-title">3. 비행 한계와 위험 상태</div>
         
         <div class="danger-card stall-border">
-            <strong style="color:var(--warning-red)">실속 (Stall) - 받음각 임계치 초과</strong>
-            <p class="theory-p" style="margin-bottom:0">기수가 약 18도 이상 들리면 공기가 날개를 따라 흐르지 못하고 소용돌이칩니다. 이때 양력이 급격히 감소하며 비행기가 통제 불능 상태로 추락할 수 있습니다.</p>
+            <strong style="color:var(--warning-red)">실속 (Stall) - 임계 받음각 초과</strong>
+            <p class="theory-p">날개의 기수를 너무 높게 들면(받음각 증가), 공기가 날개 표면을 매끄럽게 흐르지 못하고 뒤섞이며 소용돌이치는 <strong>'흐름 박리'</strong>가 일어납니다. 이때 양력이 순식간에 사라지며 조종력을 잃고 기수가 급격히 떨어지는 추락 위험 상태에 빠집니다.</p>
         </div>
 
         <div class="danger-card speed-border">
-            <strong style="color:var(--warning-orange)">과속 (Overspeed) - 구조적 한계</strong>
-            <p class="theory-p" style="margin-bottom:0">비행기가 설계된 최대 속도를 넘어서면 기체 표면에 엄청난 압력이 가해집니다. 이는 날개의 변형이나 파손을 유발하며 공중 분해의 위험이 있습니다.</p>
+            <strong style="color:var(--warning-orange)">과속 (Overspeed) - 구조적 한계 초과</strong>
+            <p class="theory-p">기체가 설계된 최대 속도 한계(Vne)를 넘어서면, 기체 표면에 가해지는 공기 역학적 하중이 급증합니다. 이는 날개나 조종면의 심한 진동(Flutter)을 유발하며, 최악의 경우 기체가 공중에서 분해되는 구조적 파손으로 이어질 수 있습니다.</p>
         </div>
     </div>
 
     <div id="simContent" class="content-area">
         <div class="canvas-container">
             <div class="status-overlay">
-                <p id="statusNormal" style="color: var(--primary-blue); font-weight: bold;">정상 비행 중</p>
-                <p id="stallTxt" class="warning-text">⚠️ 실속 발생 (STALL)</p>
-                <p id="overspeedTxt" class="warning-text">⚠️ 과속 경고 (OVERSPEED)</p>
+                <p id="statusNormal" style="color: var(--primary-blue); font-weight: bold;">Steady Flight</p>
+                <p id="stallTxt" class="warning-text">⚠️ STALL (실속 위험)</p>
+                <p id="overspeedTxt" class="warning-text">⚠️ OVERSPEED (과속 경고)</p>
             </div>
             <canvas id="simCanvas"></canvas>
         </div>
@@ -140,7 +160,7 @@
                 <div class="value-display"><span id="pitchVal">0</span>°</div>
             </div>
             <div class="control-row">
-                <label>풍속 설정</label>
+                <label>풍속(추력)</label>
                 <input type="range" id="speedRange" min="1" max="15" value="5">
                 <div class="value-display"><span id="speedVal">5</span></div>
             </div>
@@ -156,7 +176,7 @@
             document.getElementById(tabId).classList.add("active");
             evt.currentTarget.classList.add("active");
             if(tabId === 'simContent') {
-                setTimeout(resizeCanvas, 10);
+                setTimeout(resizeCanvas, 20);
             }
         }
 
